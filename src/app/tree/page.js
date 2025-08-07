@@ -3,12 +3,14 @@ import { useEffect, useRef, useState } from 'react';
 import * as THREE from 'three';
 import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls';
 import Link from 'next/link';
-const InteractiveRose = () => {
+
+const InteractiveTree = () => {
   const mountRef = useRef(null);
-  const petalMaterialRef = useRef(new THREE.MeshStandardMaterial({ color: 0xffc0cb })); // Light pink default
-  const [selectedColor, setSelectedColor] = useState('lightpink');
+  const leavesRef = useRef([]);
   const [mousePosition, setMousePosition] = useState({ x: 0, y: 0 });
   const [isLoaded, setIsLoaded] = useState(false);
+  let currentAngle = 0;
+
   useEffect(() => {
     setIsLoaded(true);
     
@@ -27,91 +29,77 @@ const InteractiveRose = () => {
     renderer.setSize(window.innerWidth, window.innerHeight);
     renderer.setClearColor(0xfdfcf8, 0.8);
     mountRef.current.appendChild(renderer.domElement);
+
     const controls = new OrbitControls(camera, renderer.domElement);
     controls.enableDamping = true;
     controls.dampingFactor = 0.05;
-    const directionalLight = new THREE.DirectionalLight(0xffffff, 1);
-    directionalLight.position.set(5, 5, 5);
-    scene.add(directionalLight);
-    scene.add(new THREE.AmbientLight(0x888888));
-    const greenMaterial = new THREE.MeshStandardMaterial({ color: 0x228b22 });
-    const darkGreenMaterial = new THREE.MeshStandardMaterial({ color: 0x006400 });
-    const roseGroup = new THREE.Group();
-    scene.add(roseGroup);
-    const bud = new THREE.Mesh(new THREE.SphereGeometry(0.25, 32, 32), petalMaterialRef.current);
-    bud.position.y = 2.5;
-    roseGroup.add(bud);
-    const petalCount = 12;
-    const petalGeometry = new THREE.ConeGeometry(0.3, 0.7, 30);
-    const petals = [];
-    for (let i = 0; i < petalCount; i++) {
-      const petal = new THREE.Mesh(petalGeometry, petalMaterialRef.current);
-      const angle = (i / petalCount) * Math.PI * 2;
-      petal.position.set(Math.cos(angle) * 0.3, 2.5, Math.sin(angle) * 0.3);
-      petal.rotation.set(Math.PI / 2.3, 0, angle);
-      roseGroup.add(petal);
-      petals.push(petal);
+
+    const light = new THREE.DirectionalLight(0xffffff, 1);
+    light.position.set(5, 10, 7.5);
+    scene.add(light);
+    scene.add(new THREE.AmbientLight(0x404040));
+
+    const treeGroup = new THREE.Group();
+    scene.add(treeGroup);
+
+    const trunkMaterial = new THREE.MeshStandardMaterial({ color: 0x8b4513 });
+    const leafMaterial = new THREE.MeshStandardMaterial({ color: 0x228b22 });
+
+    const trunk = new THREE.Mesh(new THREE.CylinderGeometry(0.3, 0.5, 5), trunkMaterial);
+    trunk.position.y = 2.5;
+    treeGroup.add(trunk);
+
+    const leafGeometry = new THREE.SphereGeometry(0.5, 16, 16);
+
+    for (let y = 1; y <= 5; y += 0.8) {
+      for (let i = 0; i < 12; i++) {
+        const angle = (i / 12) * Math.PI * 2;
+        const leaf = new THREE.Mesh(leafGeometry, leafMaterial);
+        leaf.position.set(Math.cos(angle) * 1.2, y, Math.sin(angle) * 1.2);
+        leaf.rotation.y = angle;
+        treeGroup.add(leaf);
+        leavesRef.current.push(leaf);
+      }
     }
-    const stem = new THREE.Mesh(new THREE.CylinderGeometry(0.05, 0.05, 3), greenMaterial);
-    stem.position.y = 1;
-    roseGroup.add(stem);
-    const leafShape = new THREE.Shape();
-    leafShape.moveTo(0, 0);
-    leafShape.bezierCurveTo(0.4, 0.3, 0.4, 0.6, 0, 0.8);
-    leafShape.bezierCurveTo(-0.4, 0.6, -0.4, 0.3, 0, 0);
-    const leafGeometry = new THREE.ShapeGeometry(leafShape);
-    const leaf1 = new THREE.Mesh(leafGeometry, darkGreenMaterial);
-    leaf1.rotation.x = -Math.PI / 2;
-    leaf1.rotation.z = Math.PI / 4;
-    leaf1.position.set(0.3, 1.2, 0);
-    const leaf2 = leaf1.clone();
-    leaf2.rotation.z = -Math.PI / 4;
-    leaf2.position.set(-0.3, 0.8, 0);
-    roseGroup.add(leaf1);
-    roseGroup.add(leaf2);
-    const sepalGeometry = new THREE.ConeGeometry(0.05, 0.2, 8);
-    for (let i = 0; i < 3; i++) {
-      const sepal = new THREE.Mesh(sepalGeometry, darkGreenMaterial);
-      const angle = (i / 3) * Math.PI * 2;
-      sepal.position.set(Math.cos(angle) * 0.1, 2.25, Math.sin(angle) * 0.1);
-      sepal.rotation.set(-Math.PI / 3, 0, angle);
-      roseGroup.add(sepal);
-    }
-    camera.position.set(0, 2.5, 5);
+
+    camera.position.set(0, 5, 10);
     controls.update();
+
     const animate = () => {
       requestAnimationFrame(animate);
       controls.update();
       renderer.render(scene, camera);
     };
     animate();
+
+    const handleClick = () => {
+      currentAngle += Math.PI / 9;
+      leavesRef.current.forEach((leaf, index) => {
+        leaf.visible = index % 36 >= currentAngle / (Math.PI / 18);
+      });
+    };
+
+    window.addEventListener('click', handleClick);
+
     const handleResize = () => {
       camera.aspect = window.innerWidth / window.innerHeight;
       camera.updateProjectionMatrix();
       renderer.setSize(window.innerWidth, window.innerHeight);
     };
+
     window.addEventListener('resize', handleResize);
+
     return () => {
       window.removeEventListener('mousemove', handleMouseMove);
       window.removeEventListener('resize', handleResize);
+      window.removeEventListener('click', handleClick);
       renderer.dispose();
       if (mountRef.current) mountRef.current.removeChild(renderer.domElement);
     };
   }, []);
-  // Handle petal color change
-  useEffect(() => {
-    const colorMap = {
-      red: 0xff0000,
-      yellow: 0xffff00,
-      magenta: 0xff00ff,
-      lightpink: 0xffc0cb,
-    };
-    if (petalMaterialRef.current) {
-      petalMaterialRef.current.color.setHex(colorMap[selectedColor]);
-    }
-  }, [selectedColor]);
+
   return (
-    <div style={{ position: 'relative', width: '100vw', height: '100vh', background: '#1a0a1a', overflow: 'hidden' }}>
+    <div style={{ position: 'relative', width: '100vw', height: '100vh', background: '#0a0a23', overflow: 'hidden' }}>
       {/* Multi-Color Animated Background */}
       <div style={{ position: 'fixed', inset: '0', pointerEvents: 'none' }}>
         {/* Dynamic mouse-following gradient */}
@@ -120,7 +108,7 @@ const InteractiveRose = () => {
             position: 'absolute',
             inset: '0',
             opacity: 0.4,
-            background: `radial-gradient(circle at ${mousePosition.x}% ${mousePosition.y}%, rgba(255, 105, 180, 0.3) 0%, rgba(255, 20, 147, 0.2) 25%, rgba(255, 182, 193, 0.1) 50%, transparent 70%)`,
+            background: `radial-gradient(circle at ${mousePosition.x}% ${mousePosition.y}%, rgba(74, 144, 226, 0.3) 0%, rgba(30, 144, 255, 0.2) 25%, rgba(135, 206, 235, 0.1) 50%, transparent 70%)`,
             transition: 'background 0.5s ease-out'
           }}
         />
@@ -135,7 +123,7 @@ const InteractiveRose = () => {
           borderRadius: '50%',
           filter: 'blur(48px)',
           opacity: 0.3,
-          background: 'linear-gradient(45deg, #ff69b4, #ff1493, #ffb6c1)',
+          background: 'linear-gradient(45deg, #4a90e2, #1e90ff, #87ceeb)',
           animation: 'float 20s ease-in-out infinite'
         }} />
         <div style={{
@@ -147,7 +135,7 @@ const InteractiveRose = () => {
           borderRadius: '50%',
           filter: 'blur(48px)',
           opacity: 0.25,
-          background: 'linear-gradient(45deg, #ff1493, #dc143c, #ff6347)',
+          background: 'linear-gradient(45deg, #1e90ff, #0066cc, #4169e1)',
           animation: 'float 20s ease-in-out infinite',
           animationDelay: '3s'
         }} />
@@ -159,7 +147,7 @@ const InteractiveRose = () => {
           left: '40px',
           width: '12px',
           height: '12px',
-          background: '#ff69b4',
+          background: '#4a90e2',
           borderRadius: '50%',
           opacity: 0.8,
           animation: 'float 15s ease-in-out infinite'
@@ -170,7 +158,7 @@ const InteractiveRose = () => {
           right: '80px',
           width: '8px',
           height: '8px',
-          background: '#ff1493',
+          background: '#1e90ff',
           borderRadius: '50%',
           opacity: 0.7,
           animation: 'float 15s ease-in-out infinite',
@@ -182,14 +170,13 @@ const InteractiveRose = () => {
           left: '80px',
           width: '16px',
           height: '16px',
-          background: '#ffb6c1',
+          background: '#87ceeb',
           borderRadius: '50%',
           opacity: 0.6,
           animation: 'float 15s ease-in-out infinite',
           animationDelay: '4s'
         }} />
       </div>
-      
       {/* Navigation */}
       <nav style={{
         position: 'fixed',
@@ -215,7 +202,7 @@ const InteractiveRose = () => {
             textDecoration: 'none',
             fontSize: '1.5rem',
             fontWeight: 'bold',
-            background: 'linear-gradient(45deg, #ff69b4, #ff1493, #ffb6c1)',
+            background: 'linear-gradient(45deg, #4a90e2, #1e90ff, #87ceeb)',
             backgroundClip: 'text',
             WebkitBackgroundClip: 'text',
             WebkitTextFillColor: 'transparent',
@@ -230,24 +217,25 @@ const InteractiveRose = () => {
           </Link>
           <div style={{ display: 'flex', gap: '2rem' }}>
             <Link href="/tree" style={{
-              color: 'white',
+              color: '#4a90e2',
               textDecoration: 'none',
               padding: '0.5rem 1rem',
               borderRadius: '0.5rem',
-              background: 'rgba(255, 255, 255, 0.1)',
+              background: 'rgba(74, 144, 226, 0.2)',
               backdropFilter: 'blur(10px)',
-              border: '1px solid rgba(255, 255, 255, 0.2)',
+              border: '1px solid #4a90e2',
+              boxShadow: '0 0 20px rgba(74, 144, 226, 0.3)',
               transition: 'all 0.3s ease'
             }}
             onMouseEnter={(e) => {
-              e.target.style.background = 'rgba(255, 255, 255, 0.2)';
+              e.target.style.background = 'rgba(74, 144, 226, 0.3)';
               e.target.style.transform = 'translateY(-2px)';
-              e.target.style.boxShadow = '0 4px 20px rgba(255, 255, 255, 0.1)';
+              e.target.style.boxShadow = '0 4px 30px rgba(74, 144, 226, 0.4)';
             }}
             onMouseLeave={(e) => {
-              e.target.style.background = 'rgba(255, 255, 255, 0.1)';
+              e.target.style.background = 'rgba(74, 144, 226, 0.2)';
               e.target.style.transform = 'translateY(0)';
-              e.target.style.boxShadow = 'none';
+              e.target.style.boxShadow = '0 0 20px rgba(74, 144, 226, 0.3)';
             }}>
               Interactive Tree
             </Link>
@@ -274,25 +262,24 @@ const InteractiveRose = () => {
               Maram
             </Link>
             <Link href="/rosapo" style={{
-              color: '#ff69b4',
+              color: 'white',
               textDecoration: 'none',
               padding: '0.5rem 1rem',
               borderRadius: '0.5rem',
-              background: 'rgba(255, 105, 180, 0.2)',
+              background: 'rgba(255, 255, 255, 0.1)',
               backdropFilter: 'blur(10px)',
-              border: '1px solid #ff69b4',
-              boxShadow: '0 0 20px rgba(255, 105, 180, 0.3)',
+              border: '1px solid rgba(255, 255, 255, 0.2)',
               transition: 'all 0.3s ease'
             }}
             onMouseEnter={(e) => {
-              e.target.style.background = 'rgba(255, 105, 180, 0.3)';
+              e.target.style.background = 'rgba(255, 255, 255, 0.2)';
               e.target.style.transform = 'translateY(-2px)';
-              e.target.style.boxShadow = '0 4px 30px rgba(255, 105, 180, 0.4)';
+              e.target.style.boxShadow = '0 4px 20px rgba(255, 255, 255, 0.1)';
             }}
             onMouseLeave={(e) => {
-              e.target.style.background = 'rgba(255, 105, 180, 0.2)';
+              e.target.style.background = 'rgba(255, 255, 255, 0.1)';
               e.target.style.transform = 'translateY(0)';
-              e.target.style.boxShadow = '0 0 20px rgba(255, 105, 180, 0.3)';
+              e.target.style.boxShadow = 'none';
             }}>
               Rosapo
             </Link>
@@ -300,61 +287,35 @@ const InteractiveRose = () => {
         </div>
       </nav>
 
-      {/* Color Selector and Instructions */}
+      {/* Instructions */}
       <div style={{
         position: 'absolute',
         top: '80px',
         left: '2rem',
+        color: 'white',
         zIndex: 10,
         background: 'rgba(0, 0, 0, 0.3)',
         backdropFilter: 'blur(20px)',
         padding: '1rem',
         borderRadius: '0.75rem',
-        border: '1px solid rgba(255, 105, 180, 0.3)',
+        border: '1px solid rgba(74, 144, 226, 0.3)',
         boxShadow: '0 8px 32px rgba(0, 0, 0, 0.3)',
-        color: 'white',
         animation: `${isLoaded ? 'fade-in 1s ease-out' : 'none'}`,
         opacity: isLoaded ? 1 : 0
       }}>
         <h3 style={{ 
           margin: '0 0 0.5rem 0',
-          background: 'linear-gradient(45deg, #ff69b4, #ffb6c1)',
+          background: 'linear-gradient(45deg, #4a90e2, #87ceeb)',
           backgroundClip: 'text',
           WebkitBackgroundClip: 'text',
           WebkitTextFillColor: 'transparent'
-        }}>Interactive Rose</h3>
-        <p style={{ margin: '0 0 1rem 0', fontSize: '0.9rem', opacity: 0.9 }}>Change the rose color:</p>
-        <select
-          value={selectedColor}
-          onChange={(e) => setSelectedColor(e.target.value)}
-          style={{ 
-            padding: '8px', 
-            fontSize: '16px',
-            backgroundColor: 'rgba(0, 0, 0, 0.5)',
-            color: 'white',
-            border: '1px solid rgba(255, 105, 180, 0.5)',
-            borderRadius: '0.5rem',
-            backdropFilter: 'blur(10px)',
-            transition: 'all 0.3s ease'
-          }}
-          onFocus={(e) => {
-            e.target.style.borderColor = '#ff69b4';
-            e.target.style.boxShadow = '0 0 10px rgba(255, 105, 180, 0.3)';
-          }}
-          onBlur={(e) => {
-            e.target.style.borderColor = 'rgba(255, 105, 180, 0.5)';
-            e.target.style.boxShadow = 'none';
-          }}
-        >
-          <option value="red">Red</option>
-          <option value="yellow">Yellow</option>
-          <option value="magenta">Magenta</option>
-          <option value="lightpink">Light Pink</option>
-        </select>
+        }}>Interactive Tree</h3>
+        <p style={{ margin: 0, fontSize: '0.9rem', opacity: 0.9 }}>Click anywhere to make leaves disappear gradually</p>
       </div>
 
       <div ref={mountRef} style={{ width: '100vw', height: '100vh', marginTop: '140px', background: 'rgba(253, 252, 248, 0.9)', borderRadius: '12px 12px 0 0' }} />
     </div>
   );
 };
-export default InteractiveRose;
+
+export default InteractiveTree;
