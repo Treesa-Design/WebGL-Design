@@ -1,97 +1,55 @@
 'use client';
-
 import { useEffect, useRef } from 'react';
 import * as THREE from 'three';
 import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls';
 
-const InteractiveRose = () => {
+const InteractiveTree = () => {
   const mountRef = useRef(null);
+  const leavesRef = useRef([]);
+  let currentAngle = 0;
 
   useEffect(() => {
-    // Scene Setup
     const scene = new THREE.Scene();
     const camera = new THREE.PerspectiveCamera(60, window.innerWidth / window.innerHeight, 0.1, 1000);
     const renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true });
     renderer.setSize(window.innerWidth, window.innerHeight);
     mountRef.current.appendChild(renderer.domElement);
 
-    // OrbitControls for mouse drag
     const controls = new OrbitControls(camera, renderer.domElement);
     controls.enableDamping = true;
     controls.dampingFactor = 0.05;
 
-    // Lighting
-    const directionalLight = new THREE.DirectionalLight(0xffffff, 1);
-    directionalLight.position.set(5, 5, 5);
-    scene.add(directionalLight);
-    scene.add(new THREE.AmbientLight(0x888888));
+    const light = new THREE.DirectionalLight(0xffffff, 1);
+    light.position.set(5, 10, 7.5);
+    scene.add(light);
+    scene.add(new THREE.AmbientLight(0x404040));
 
-    // Materials
-    const petalMaterial = new THREE.MeshStandardMaterial({ color: 0xffc0cb }); // Light pink
-    const greenMaterial = new THREE.MeshStandardMaterial({ color: 0x228b22 });
-    const darkGreenMaterial = new THREE.MeshStandardMaterial({ color: 0x006400 });
+    const treeGroup = new THREE.Group();
+    scene.add(treeGroup);
 
-    // Rose Group (for rotating entire flower)
-    const roseGroup = new THREE.Group();
-    scene.add(roseGroup);
+    const trunkMaterial = new THREE.MeshStandardMaterial({ color: 0x8b4513 });
+    const leafMaterial = new THREE.MeshStandardMaterial({ color: 0x228b22 });
 
-    // Bud
-    const bud = new THREE.Mesh(new THREE.SphereGeometry(0.25, 32, 32), petalMaterial);
-    bud.position.y = 2.5;
-    roseGroup.add(bud);
+    const trunk = new THREE.Mesh(new THREE.CylinderGeometry(0.3, 0.5, 5), trunkMaterial);
+    trunk.position.y = 2.5;
+    treeGroup.add(trunk);
 
-    // Petals
-    const petalCount = 8; // Change to 6 or 8
-    const petalGeometry = new THREE.ConeGeometry(0.3, 0.7, 30); // Bigger petals
+    const leafGeometry = new THREE.SphereGeometry(0.5, 16, 16);
 
-    for (let i = 0; i < petalCount; i++) {
-      const petal = new THREE.Mesh(petalGeometry, petalMaterial);
-      const angle = (i / petalCount) * Math.PI * 2;
-
-      petal.position.set(Math.cos(angle) * 0.3, 2.5, Math.sin(angle) * 0.3); // Spread petals out
-      petal.rotation.set(Math.PI / 2.3, 0, angle); // Slight tilt
-      roseGroup.add(petal);
+    for (let y = 1; y <= 5; y += 0.8) {
+      for (let i = 0; i < 12; i++) {
+        const angle = (i / 12) * Math.PI * 2;
+        const leaf = new THREE.Mesh(leafGeometry, leafMaterial);
+        leaf.position.set(Math.cos(angle) * 1.2, y, Math.sin(angle) * 1.2);
+        leaf.rotation.y = angle;
+        treeGroup.add(leaf);
+        leavesRef.current.push(leaf);
+      }
     }
 
-    // Stem
-    const stem = new THREE.Mesh(new THREE.CylinderGeometry(0.05, 0.05, 3), greenMaterial);
-    stem.position.y = 1;
-    roseGroup.add(stem);
-
-    // Leaves
-    const leafShape = new THREE.Shape();
-    leafShape.moveTo(0, 0);
-    leafShape.bezierCurveTo(0.4, 0.3, 0.4, 0.6, 0, 0.8);
-    leafShape.bezierCurveTo(-0.4, 0.6, -0.4, 0.3, 0, 0);
-
-    const leafGeometry = new THREE.ShapeGeometry(leafShape);
-    const leaf1 = new THREE.Mesh(leafGeometry, darkGreenMaterial);
-    leaf1.rotation.x = -Math.PI / 2;
-    leaf1.rotation.z = Math.PI / 4;
-    leaf1.position.set(0.3, 1.2, 0);
-
-    const leaf2 = leaf1.clone();
-    leaf2.rotation.z = -Math.PI / 4;
-    leaf2.position.set(-0.3, 0.8, 0);
-
-    roseGroup.add(leaf1);
-    roseGroup.add(leaf2);
-
-    // Sepals
-    const sepalGeometry = new THREE.ConeGeometry(0.05, 0.2, 8);
-    for (let i = 0; i < 3; i++) {
-      const sepal = new THREE.Mesh(sepalGeometry, darkGreenMaterial);
-      const angle = (i / 3) * Math.PI * 2;
-      sepal.position.set(Math.cos(angle) * 0.1, 2.25, Math.sin(angle) * 0.1);
-      sepal.rotation.set(-Math.PI / 3, 0, angle);
-      roseGroup.add(sepal);
-    }
-
-    // Camera
-    camera.position.set(0, 2.5, 5);
+    camera.position.set(0, 5, 10);
     controls.update();
 
-    // Animate
     const animate = () => {
       requestAnimationFrame(animate);
       controls.update();
@@ -99,17 +57,26 @@ const InteractiveRose = () => {
     };
     animate();
 
-    // Resize
+    const handleClick = () => {
+      currentAngle += Math.PI / 9;
+      leavesRef.current.forEach((leaf, index) => {
+        leaf.visible = index % 36 >= currentAngle / (Math.PI / 18);
+      });
+    };
+
+    window.addEventListener('click', handleClick);
+
     const handleResize = () => {
       camera.aspect = window.innerWidth / window.innerHeight;
       camera.updateProjectionMatrix();
       renderer.setSize(window.innerWidth, window.innerHeight);
     };
+
     window.addEventListener('resize', handleResize);
 
-    // Cleanup
     return () => {
       window.removeEventListener('resize', handleResize);
+      window.removeEventListener('click', handleClick);
       renderer.dispose();
       if (mountRef.current) mountRef.current.removeChild(renderer.domElement);
     };
@@ -118,4 +85,4 @@ const InteractiveRose = () => {
   return <div ref={mountRef} style={{ width: '100vw', height: '100vh' }} />;
 };
 
-export default InteractiveRose;
+export default InteractiveTree;
