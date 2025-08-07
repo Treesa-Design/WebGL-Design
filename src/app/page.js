@@ -290,28 +290,29 @@ const LandingPage = () => {
             }}>
               <Link href="/tree" style={{
                 gap: '12px',
-                padding: '24px 32px',
+                padding: '16px 24px',
                 fontSize: '18px',
                 fontWeight: '600',
                 textDecoration: 'none',
-                borderRadius: '12px',
+                borderRadius: '8px',
                 display: 'inline-flex',
                 alignItems: 'center',
                 position: 'relative',
-                overflow: 'hidden',
-                background: '#4a90e2',
                 color: 'white',
-                boxShadow: '0 8px 32px rgba(74, 144, 226, 0.3)',
-                transition: 'all 0.3s ease',
-                border: 'none'
+                background: 'rgba(255, 255, 255, 0.1)',
+                backdropFilter: 'blur(10px)',
+                border: '1px solid rgba(255, 255, 255, 0.2)',
+                transition: 'all 0.3s ease'
               }}
               onMouseEnter={(e) => {
-                e.target.style.transform = 'scale(1.05)';
-                e.target.style.boxShadow = '0 12px 40px rgba(74, 144, 226, 0.4)';
+                e.target.style.background = 'rgba(255, 255, 255, 0.2)';
+                e.target.style.transform = 'translateY(-2px)';
+                e.target.style.boxShadow = '0 4px 20px rgba(255, 255, 255, 0.1)';
               }}
               onMouseLeave={(e) => {
-                e.target.style.transform = 'scale(1)';
-                e.target.style.boxShadow = '0 8px 32px rgba(74, 144, 226, 0.3)';
+                e.target.style.background = 'rgba(255, 255, 255, 0.1)';
+                e.target.style.transform = 'translateY(0)';
+                e.target.style.boxShadow = 'none';
               }}>
                 <span style={{ position: 'relative', zIndex: 10 }}>Explore Projects</span>
                 <svg style={{ width: '20px', height: '20px', position: 'relative', zIndex: 10 }} fill="none" stroke="currentColor" viewBox="0 0 24 24">
