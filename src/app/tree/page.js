@@ -283,6 +283,28 @@ const InteractiveTree = () => {
             }}>
               Rosapo
             </Link>
+            <Link href="/myth-stories" style={{
+              color: 'white',
+              textDecoration: 'none',
+              padding: '8px 16px',
+              borderRadius: '8px',
+              background: 'rgba(255, 255, 255, 0.1)',
+              backdropFilter: 'blur(10px)',
+              border: '1px solid rgba(255, 255, 255, 0.2)',
+              transition: 'all 0.3s ease'
+            }}
+            onMouseEnter={(e) => {
+              e.target.style.background = 'rgba(255, 255, 255, 0.2)';
+              e.target.style.transform = 'translateY(-2px)';
+              e.target.style.boxShadow = '0 4px 20px rgba(255, 255, 255, 0.1)';
+            }}
+            onMouseLeave={(e) => {
+              e.target.style.background = 'rgba(255, 255, 255, 0.1)';
+              e.target.style.transform = 'translateY(0)';
+              e.target.style.boxShadow = 'none';
+            }}>
+              Myth Stories
+            </Link>
           </div>
         </div>
       </nav>
