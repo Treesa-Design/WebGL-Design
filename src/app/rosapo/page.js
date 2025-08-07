@@ -3,6 +3,7 @@ import { useEffect, useRef, useState } from 'react';
 import * as THREE from 'three';
 import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls';
 import Link from 'next/link';
+import DismissableMessage from '../components/DismissableMessage';
 const InteractiveRose = () => {
   const mountRef = useRef(null);
   const petalMaterialRef = useRef(new THREE.MeshStandardMaterial({ color: 0xffc0cb })); // Light pink default
@@ -22,9 +23,11 @@ const InteractiveRose = () => {
     window.addEventListener('mousemove', handleMouseMove);
     
     const scene = new THREE.Scene();
-    const camera = new THREE.PerspectiveCamera(60, window.innerWidth / window.innerHeight, 0.1, 1000);
+    const navHeight = 80;
+    const availableHeight = window.innerHeight - navHeight;
+    const camera = new THREE.PerspectiveCamera(60, window.innerWidth / availableHeight, 0.1, 1000);
     const renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true });
-    renderer.setSize(window.innerWidth, window.innerHeight);
+    renderer.setSize(window.innerWidth, availableHeight);
     renderer.setClearColor(0xfdfcf8, 0.8);
     mountRef.current.appendChild(renderer.domElement);
     const controls = new OrbitControls(camera, renderer.domElement);
@@ -86,9 +89,10 @@ const InteractiveRose = () => {
     };
     animate();
     const handleResize = () => {
-      camera.aspect = window.innerWidth / window.innerHeight;
+      const newAvailableHeight = window.innerHeight - navHeight;
+      camera.aspect = window.innerWidth / newAvailableHeight;
       camera.updateProjectionMatrix();
-      renderer.setSize(window.innerWidth, window.innerHeight);
+      renderer.setSize(window.innerWidth, newAvailableHeight);
     };
     window.addEventListener('resize', handleResize);
     return () => {
@@ -190,142 +194,19 @@ const InteractiveRose = () => {
         }} />
       </div>
       
-      {/* Navigation */}
-      <nav style={{
-        position: 'fixed',
-        top: 0,
-        left: 0,
-        right: 0,
-        zIndex: 100,
-        background: 'rgba(0, 0, 0, 0.3)',
-        backdropFilter: 'blur(20px)',
-        padding: '1rem 2rem',
-        borderBottom: '1px solid rgba(255, 255, 255, 0.1)',
-        transition: 'all 0.3s ease'
-      }}>
-        <div style={{
-          display: 'flex',
-          justifyContent: 'space-between',
-          alignItems: 'center',
-          maxWidth: '1200px',
-          margin: '0 auto'
-        }}>
-          <Link href="/" style={{
-            color: 'white',
-            textDecoration: 'none',
-            fontSize: '1.5rem',
-            fontWeight: 'bold',
-            background: 'linear-gradient(45deg, #ff69b4, #ff1493, #ffb6c1)',
-            backgroundClip: 'text',
-            WebkitBackgroundClip: 'text',
-            WebkitTextFillColor: 'transparent',
-            backgroundSize: '400% 400%',
-            animation: 'rainbow-shift 3s ease infinite',
-            transition: 'transform 0.3s ease'
-          }}
-          onMouseEnter={(e) => e.target.style.transform = 'scale(1.05)'}
-          onMouseLeave={(e) => e.target.style.transform = 'scale(1)'}
-          >
-            Treesa Design
-          </Link>
-          <div style={{ display: 'flex', gap: '2rem' }}>
-            <Link href="/tree" style={{
-              color: 'white',
-              textDecoration: 'none',
-              padding: '0.5rem 1rem',
-              borderRadius: '0.5rem',
-              background: 'rgba(255, 255, 255, 0.1)',
-              backdropFilter: 'blur(10px)',
-              border: '1px solid rgba(255, 255, 255, 0.2)',
-              transition: 'all 0.3s ease'
-            }}
-            onMouseEnter={(e) => {
-              e.target.style.background = 'rgba(255, 255, 255, 0.2)';
-              e.target.style.transform = 'translateY(-2px)';
-              e.target.style.boxShadow = '0 4px 20px rgba(255, 255, 255, 0.1)';
-            }}
-            onMouseLeave={(e) => {
-              e.target.style.background = 'rgba(255, 255, 255, 0.1)';
-              e.target.style.transform = 'translateY(0)';
-              e.target.style.boxShadow = 'none';
-            }}>
-              Interactive Tree
-            </Link>
-            <Link href="/maram" style={{
-              color: 'white',
-              textDecoration: 'none',
-              padding: '0.5rem 1rem',
-              borderRadius: '0.5rem',
-              background: 'rgba(255, 255, 255, 0.1)',
-              backdropFilter: 'blur(10px)',
-              border: '1px solid rgba(255, 255, 255, 0.2)',
-              transition: 'all 0.3s ease'
-            }}
-            onMouseEnter={(e) => {
-              e.target.style.background = 'rgba(255, 255, 255, 0.2)';
-              e.target.style.transform = 'translateY(-2px)';
-              e.target.style.boxShadow = '0 4px 20px rgba(255, 255, 255, 0.1)';
-            }}
-            onMouseLeave={(e) => {
-              e.target.style.background = 'rgba(255, 255, 255, 0.1)';
-              e.target.style.transform = 'translateY(0)';
-              e.target.style.boxShadow = 'none';
-            }}>
-              Maram
-            </Link>
-            <Link href="/rosapo" style={{
-              color: '#ff69b4',
-              textDecoration: 'none',
-              padding: '0.5rem 1rem',
-              borderRadius: '0.5rem',
-              background: 'rgba(255, 105, 180, 0.2)',
-              backdropFilter: 'blur(10px)',
-              border: '1px solid #ff69b4',
-              boxShadow: '0 0 20px rgba(255, 105, 180, 0.3)',
-              transition: 'all 0.3s ease'
-            }}
-            onMouseEnter={(e) => {
-              e.target.style.background = 'rgba(255, 105, 180, 0.3)';
-              e.target.style.transform = 'translateY(-2px)';
-              e.target.style.boxShadow = '0 4px 30px rgba(255, 105, 180, 0.4)';
-            }}
-            onMouseLeave={(e) => {
-              e.target.style.background = 'rgba(255, 105, 180, 0.2)';
-              e.target.style.transform = 'translateY(0)';
-              e.target.style.boxShadow = '0 0 20px rgba(255, 105, 180, 0.3)';
-            }}>
-              Rosapo
-            </Link>
-            <Link href="/myth-stories" style={{
-              color: 'white',
-              textDecoration: 'none',
-              padding: '8px 16px',
-              borderRadius: '8px',
-              background: 'rgba(255, 255, 255, 0.1)',
-              backdropFilter: 'blur(10px)',
-              border: '1px solid rgba(255, 255, 255, 0.2)',
-              transition: 'all 0.3s ease'
-            }}
-            onMouseEnter={(e) => {
-              e.target.style.background = 'rgba(255, 255, 255, 0.2)';
-              e.target.style.transform = 'translateY(-2px)';
-              e.target.style.boxShadow = '0 4px 20px rgba(255, 255, 255, 0.1)';
-            }}
-            onMouseLeave={(e) => {
-              e.target.style.background = 'rgba(255, 255, 255, 0.1)';
-              e.target.style.transform = 'translateY(0)';
-              e.target.style.boxShadow = 'none';
-            }}>
-              Myth Stories
-            </Link>
-          </div>
-        </div>
-      </nav>
 
-      {/* Color Selector and Instructions */}
+      <DismissableMessage 
+        title="Interactive Rose"
+        description="Change the rose color using the controls below."
+        gradient="linear-gradient(45deg, #ff69b4, #ff1493)"
+        borderColor="rgba(255, 105, 180, 0.3)"
+        position={{ top: '100px', left: '2rem' }}
+      />
+
+      {/* Color Selector */}
       <div style={{
         position: 'absolute',
-        top: '80px',
+        top: '200px',
         left: '2rem',
         zIndex: 10,
         background: 'rgba(0, 0, 0, 0.3)',
@@ -338,14 +219,7 @@ const InteractiveRose = () => {
         animation: `${isLoaded ? 'fade-in 1s ease-out' : 'none'}`,
         opacity: isLoaded ? 1 : 0
       }}>
-        <h3 style={{ 
-          margin: '0 0 0.5rem 0',
-          background: 'linear-gradient(45deg, #ff69b4, #ffb6c1)',
-          backgroundClip: 'text',
-          WebkitBackgroundClip: 'text',
-          WebkitTextFillColor: 'transparent'
-        }}>Interactive Rose</h3>
-        <p style={{ margin: '0 0 1rem 0', fontSize: '0.9rem', opacity: 0.9 }}>Change the rose color:</p>
+        <p style={{ margin: '0 0 1rem 0', fontSize: '0.9rem', opacity: 0.9 }}>Rose Color:</p>
         <select
           value={selectedColor}
           onChange={(e) => setSelectedColor(e.target.value)}
@@ -375,7 +249,13 @@ const InteractiveRose = () => {
         </select>
       </div>
 
-      <div ref={mountRef} style={{ width: '100vw', height: '100vh', marginTop: '140px', background: 'rgba(253, 252, 248, 0.9)', borderRadius: '12px 12px 0 0' }} />
+      <div ref={mountRef} style={{ 
+        width: '100vw', 
+        height: 'calc(100vh - 80px)', 
+        marginTop: '80px',
+        background: 'rgba(253, 252, 248, 0.9)', 
+        borderRadius: '12px 12px 0 0' 
+      }} />
     </div>
   );
 };

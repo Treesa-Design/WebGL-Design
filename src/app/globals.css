@@ -84,3 +84,62 @@ a {
     transform: translateY(-10px);
   }
 }
+
+/* Mobile Responsive Styles */
+@media (max-width: 768px) {
+  .desktop-nav {
+    display: none !important;
+  }
+  
+  .mobile-menu-btn {
+    display: flex !important;
+    align-items: center;
+    justify-content: center;
+  }
+  
+  .mobile-menu {
+    display: block;
+  }
+}
+
+@media (min-width: 769px) {
+  .mobile-menu-btn {
+    display: none !important;
+  }
+  
+  .mobile-menu {
+    display: none !important;
+  }
+}
+
+/* Slide-in animation for sidebar menu items */
+@keyframes slideInRight {
+  from {
+    opacity: 0;
+    transform: translateX(30px);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+
+/* Mobile optimizations */
+@media (max-width: 480px) {
+  body {
+    overflow-x: hidden;
+  }
+  
+  /* Better touch targets on mobile */
+  nav a, nav button {
+    min-height: 44px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  /* Sidebar menu optimizations for very small screens */
+  .sidebar-menu {
+    width: 100vw !important;
+  }
+}

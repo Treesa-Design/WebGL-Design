@@ -1,6 +1,7 @@
 'use client';
 import { useEffect, useState } from 'react';
 import Link from 'next/link';
+import DismissableMessage from '../components/DismissableMessage';
 
 const MythStories = () => {
   const [mousePosition, setMousePosition] = useState({ x: 0, y: 0 });
@@ -22,11 +23,19 @@ const MythStories = () => {
 
   return (
     <div style={{ 
-      minHeight: '100vh', 
+      minHeight: 'calc(100vh - 80px)', 
+      marginTop: '80px',
       background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)', 
       overflow: 'hidden', 
       position: 'relative' 
     }}>
+      <DismissableMessage 
+        title="Myth Stories"
+        description="Step into a realm where ancient legends meet cutting-edge WebGL technology."
+        gradient="linear-gradient(45deg, #8b5cf6, #a855f7)"
+        borderColor="rgba(139, 92, 246, 0.3)"
+        position={{ top: '20px', left: '2rem' }}
+      />
       {/* Multi-Color Animated Background */}
       <div style={{ position: 'fixed', inset: '0', pointerEvents: 'none' }}>
         {/* Dynamic mouse-following gradient */}
@@ -146,142 +155,11 @@ const MythStories = () => {
         }} />
       </div>
 
-      {/* Navigation */}
-      <nav style={{
-        position: 'fixed',
-        top: 0,
-        left: 0,
-        right: 0,
-        zIndex: 100,
-        background: 'rgba(0, 0, 0, 0.3)',
-        backdropFilter: 'blur(20px)',
-        padding: '16px 32px',
-        borderBottom: '1px solid rgba(255, 255, 255, 0.1)',
-        transition: 'all 0.3s ease'
-      }}>
-        <div style={{
-          display: 'flex',
-          justifyContent: 'space-between',
-          alignItems: 'center',
-          maxWidth: '1200px',
-          margin: '0 auto'
-        }}>
-          <Link href="/" style={{
-            color: 'white',
-            textDecoration: 'none',
-            fontSize: '24px',
-            fontWeight: 'bold',
-            background: 'linear-gradient(45deg, #8B5CF6, #A855F7, #C084FC)',
-            backgroundClip: 'text',
-            WebkitBackgroundClip: 'text',
-            WebkitTextFillColor: 'transparent',
-            backgroundSize: '400% 400%',
-            animation: 'rainbow-shift 3s ease infinite',
-            transition: 'transform 0.3s ease'
-          }}
-          onMouseEnter={(e) => e.target.style.transform = 'scale(1.05)'}
-          onMouseLeave={(e) => e.target.style.transform = 'scale(1)'}
-          >
-            Treesa Design
-          </Link>
-          <div style={{ display: 'flex', gap: '32px' }}>
-            <Link href="/tree" style={{
-              color: 'white',
-              textDecoration: 'none',
-              padding: '8px 16px',
-              borderRadius: '8px',
-              background: 'rgba(255, 255, 255, 0.1)',
-              backdropFilter: 'blur(10px)',
-              border: '1px solid rgba(255, 255, 255, 0.2)',
-              transition: 'all 0.3s ease'
-            }}
-            onMouseEnter={(e) => {
-              e.target.style.background = 'rgba(255, 255, 255, 0.2)';
-              e.target.style.transform = 'translateY(-2px)';
-              e.target.style.boxShadow = '0 4px 20px rgba(255, 255, 255, 0.1)';
-            }}
-            onMouseLeave={(e) => {
-              e.target.style.background = 'rgba(255, 255, 255, 0.1)';
-              e.target.style.transform = 'translateY(0)';
-              e.target.style.boxShadow = 'none';
-            }}>
-              Interactive Tree
-            </Link>
-            <Link href="/maram" style={{
-              color: 'white',
-              textDecoration: 'none',
-              padding: '8px 16px',
-              borderRadius: '8px',
-              background: 'rgba(255, 255, 255, 0.1)',
-              backdropFilter: 'blur(10px)',
-              border: '1px solid rgba(255, 255, 255, 0.2)',
-              transition: 'all 0.3s ease'
-            }}
-            onMouseEnter={(e) => {
-              e.target.style.background = 'rgba(255, 255, 255, 0.2)';
-              e.target.style.transform = 'translateY(-2px)';
-              e.target.style.boxShadow = '0 4px 20px rgba(255, 255, 255, 0.1)';
-            }}
-            onMouseLeave={(e) => {
-              e.target.style.background = 'rgba(255, 255, 255, 0.1)';
-              e.target.style.transform = 'translateY(0)';
-              e.target.style.boxShadow = 'none';
-            }}>
-              Maram
-            </Link>
-            <Link href="/rosapo" style={{
-              color: 'white',
-              textDecoration: 'none',
-              padding: '8px 16px',
-              borderRadius: '8px',
-              background: 'rgba(255, 255, 255, 0.1)',
-              backdropFilter: 'blur(10px)',
-              border: '1px solid rgba(255, 255, 255, 0.2)',
-              transition: 'all 0.3s ease'
-            }}
-            onMouseEnter={(e) => {
-              e.target.style.background = 'rgba(255, 255, 255, 0.2)';
-              e.target.style.transform = 'translateY(-2px)';
-              e.target.style.boxShadow = '0 4px 20px rgba(255, 255, 255, 0.1)';
-            }}
-            onMouseLeave={(e) => {
-              e.target.style.background = 'rgba(255, 255, 255, 0.1)';
-              e.target.style.transform = 'translateY(0)';
-              e.target.style.boxShadow = 'none';
-            }}>
-              Rosapo
-            </Link>
-            <Link href="/myth-stories" style={{
-              color: '#A855F7',
-              textDecoration: 'none',
-              padding: '8px 16px',
-              borderRadius: '8px',
-              background: 'rgba(168, 85, 247, 0.2)',
-              backdropFilter: 'blur(10px)',
-              border: '1px solid #A855F7',
-              boxShadow: '0 0 20px rgba(168, 85, 247, 0.3)',
-              transition: 'all 0.3s ease'
-            }}
-            onMouseEnter={(e) => {
-              e.target.style.background = 'rgba(168, 85, 247, 0.3)';
-              e.target.style.transform = 'translateY(-2px)';
-              e.target.style.boxShadow = '0 4px 30px rgba(168, 85, 247, 0.4)';
-            }}
-            onMouseLeave={(e) => {
-              e.target.style.background = 'rgba(168, 85, 247, 0.2)';
-              e.target.style.transform = 'translateY(0)';
-              e.target.style.boxShadow = '0 0 20px rgba(168, 85, 247, 0.3)';
-            }}>
-              Myth Stories
-            </Link>
-          </div>
-        </div>
-      </nav>
 
       {/* Coming Soon Section */}
       <section style={{ 
         position: 'relative', 
-        minHeight: '100vh', 
+        minHeight: 'calc(100vh - 80px)', 
         display: 'flex', 
         alignItems: 'center', 
         justifyContent: 'center' 

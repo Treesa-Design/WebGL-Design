@@ -17,7 +17,10 @@ const LandingPage = () => {
     };
 
     window.addEventListener('mousemove', handleMouseMove);
-    return () => window.removeEventListener('mousemove', handleMouseMove);
+    
+    return () => {
+      window.removeEventListener('mousemove', handleMouseMove);
+    };
   }, []);
 
   return (
@@ -217,8 +220,8 @@ const LandingPage = () => {
           position: 'relative', 
           maxWidth: '1200px', 
           margin: '0 auto', 
-          padding: '0 24px', 
-          paddingTop: '96px' 
+          padding: '0 clamp(16px, 4vw, 24px)', 
+          paddingTop: 'clamp(80px, 15vh, 96px)' 
         }}>
           <div style={{ maxWidth: '1024px', margin: '0 auto', textAlign: 'center' }}>
             {/* Brand */}
@@ -259,15 +262,16 @@ const LandingPage = () => {
 
             {/* Description */}
             <div style={{
-              marginBottom: '48px',
+              marginBottom: 'clamp(32px, 8vw, 48px)',
               maxWidth: '512px',
-              margin: '0 auto 48px auto',
+              margin: '0 auto clamp(32px, 8vw, 48px) auto',
               transition: 'all 1s 0.3s',
               animation: isLoaded ? 'fade-in 1s ease-out 0.5s both' : 'none',
-              opacity: isLoaded ? 1 : 0
+              opacity: isLoaded ? 1 : 0,
+              padding: '0 16px'
             }}>
               <p style={{
-                fontSize: '18px',
+                fontSize: 'clamp(16px, 3.5vw, 18px)',
                 color: 'rgba(255, 255, 255, 0.7)',
                 lineHeight: '1.6',
                 margin: 0
@@ -290,8 +294,8 @@ const LandingPage = () => {
             }}>
               <Link href="/tree" style={{
                 gap: '12px',
-                padding: '16px 24px',
-                fontSize: '18px',
+                padding: 'clamp(12px, 3vw, 16px) clamp(20px, 5vw, 24px)',
+                fontSize: 'clamp(16px, 4vw, 18px)',
                 fontWeight: '600',
                 textDecoration: 'none',
                 borderRadius: '8px',
@@ -326,16 +330,16 @@ const LandingPage = () => {
 
       {/* Features */}
       <section style={{ 
-        paddingTop: '80px', 
-        paddingBottom: '80px', 
+        paddingTop: 'clamp(60px, 12vw, 80px)', 
+        paddingBottom: 'clamp(60px, 12vw, 80px)', 
         borderTop: '1px solid rgba(255, 255, 255, 0.1)', 
         position: 'relative' 
       }}>
-        <div style={{ maxWidth: '1200px', margin: '0 auto', padding: '0 24px' }}>
+        <div style={{ maxWidth: '1200px', margin: '0 auto', padding: '0 clamp(16px, 4vw, 24px)' }}>
           <div style={{ 
             display: 'grid', 
-            gridTemplateColumns: 'repeat(auto-fit, minmax(300px, 1fr))', 
-            gap: '32px', 
+            gridTemplateColumns: 'repeat(auto-fit, minmax(280px, 1fr))', 
+            gap: 'clamp(24px, 6vw, 32px)', 
             maxWidth: '1024px', 
             margin: '0 auto' 
           }}>
@@ -524,136 +528,6 @@ const LandingPage = () => {
         </div>
       </section>
 
-      {/* Navigation */}
-      <nav style={{
-        position: 'fixed',
-        top: 0,
-        left: 0,
-        right: 0,
-        zIndex: 100,
-        background: 'rgba(0, 0, 0, 0.3)',
-        backdropFilter: 'blur(20px)',
-        padding: '16px 32px',
-        borderBottom: '1px solid rgba(255, 255, 255, 0.1)',
-        transition: 'all 0.3s ease'
-      }}>
-        <div style={{
-          display: 'flex',
-          justifyContent: 'space-between',
-          alignItems: 'center',
-          maxWidth: '1200px',
-          margin: '0 auto'
-        }}>
-          <Link href="/" style={{
-            color: 'white',
-            textDecoration: 'none',
-            fontSize: '24px',
-            fontWeight: 'bold',
-            background: 'linear-gradient(45deg, #ff0080, #40e0d0, #ff8c00)',
-            backgroundClip: 'text',
-            WebkitBackgroundClip: 'text',
-            WebkitTextFillColor: 'transparent',
-            backgroundSize: '400% 400%',
-            animation: 'rainbow-shift 3s ease infinite',
-            transition: 'transform 0.3s ease'
-          }}
-          onMouseEnter={(e) => e.target.style.transform = 'scale(1.05)'}
-          onMouseLeave={(e) => e.target.style.transform = 'scale(1)'}
-          >
-            Treesa Design
-          </Link>
-          <div style={{ display: 'flex', gap: '32px' }}>
-            <Link href="/tree" style={{
-              color: 'white',
-              textDecoration: 'none',
-              padding: '8px 16px',
-              borderRadius: '8px',
-              background: 'rgba(255, 255, 255, 0.1)',
-              backdropFilter: 'blur(10px)',
-              border: '1px solid rgba(255, 255, 255, 0.2)',
-              transition: 'all 0.3s ease'
-            }}
-            onMouseEnter={(e) => {
-              e.target.style.background = 'rgba(255, 255, 255, 0.2)';
-              e.target.style.transform = 'translateY(-2px)';
-              e.target.style.boxShadow = '0 4px 20px rgba(255, 255, 255, 0.1)';
-            }}
-            onMouseLeave={(e) => {
-              e.target.style.background = 'rgba(255, 255, 255, 0.1)';
-              e.target.style.transform = 'translateY(0)';
-              e.target.style.boxShadow = 'none';
-            }}>
-              Interactive Tree
-            </Link>
-            <Link href="/maram" style={{
-              color: 'white',
-              textDecoration: 'none',
-              padding: '8px 16px',
-              borderRadius: '8px',
-              background: 'rgba(255, 255, 255, 0.1)',
-              backdropFilter: 'blur(10px)',
-              border: '1px solid rgba(255, 255, 255, 0.2)',
-              transition: 'all 0.3s ease'
-            }}
-            onMouseEnter={(e) => {
-              e.target.style.background = 'rgba(255, 255, 255, 0.2)';
-              e.target.style.transform = 'translateY(-2px)';
-              e.target.style.boxShadow = '0 4px 20px rgba(255, 255, 255, 0.1)';
-            }}
-            onMouseLeave={(e) => {
-              e.target.style.background = 'rgba(255, 255, 255, 0.1)';
-              e.target.style.transform = 'translateY(0)';
-              e.target.style.boxShadow = 'none';
-            }}>
-              Maram
-            </Link>
-            <Link href="/rosapo" style={{
-              color: 'white',
-              textDecoration: 'none',
-              padding: '8px 16px',
-              borderRadius: '8px',
-              background: 'rgba(255, 255, 255, 0.1)',
-              backdropFilter: 'blur(10px)',
-              border: '1px solid rgba(255, 255, 255, 0.2)',
-              transition: 'all 0.3s ease'
-            }}
-            onMouseEnter={(e) => {
-              e.target.style.background = 'rgba(255, 255, 255, 0.2)';
-              e.target.style.transform = 'translateY(-2px)';
-              e.target.style.boxShadow = '0 4px 20px rgba(255, 255, 255, 0.1)';
-            }}
-            onMouseLeave={(e) => {
-              e.target.style.background = 'rgba(255, 255, 255, 0.1)';
-              e.target.style.transform = 'translateY(0)';
-              e.target.style.boxShadow = 'none';
-            }}>
-              Rosapo
-            </Link>
-            <Link href="/myth-stories" style={{
-              color: 'white',
-              textDecoration: 'none',
-              padding: '8px 16px',
-              borderRadius: '8px',
-              background: 'rgba(255, 255, 255, 0.1)',
-              backdropFilter: 'blur(10px)',
-              border: '1px solid rgba(255, 255, 255, 0.2)',
-              transition: 'all 0.3s ease'
-            }}
-            onMouseEnter={(e) => {
-              e.target.style.background = 'rgba(255, 255, 255, 0.2)';
-              e.target.style.transform = 'translateY(-2px)';
-              e.target.style.boxShadow = '0 4px 20px rgba(255, 255, 255, 0.1)';
-            }}
-            onMouseLeave={(e) => {
-              e.target.style.background = 'rgba(255, 255, 255, 0.1)';
-              e.target.style.transform = 'translateY(0)';
-              e.target.style.boxShadow = 'none';
-            }}>
-              Myth Stories
-            </Link>
-          </div>
-        </div>
-      </nav>
     </div>
   );
 };
