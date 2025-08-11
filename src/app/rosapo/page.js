@@ -2,15 +2,33 @@
 import { useEffect, useRef, useState } from 'react';
 import * as THREE from 'three';
 import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls';
+import Link from 'next/link';
+import DismissableMessage from '../components/DismissableMessage';
 const InteractiveRose = () => {
   const mountRef = useRef(null);
   const petalMaterialRef = useRef(new THREE.MeshStandardMaterial({ color: 0xffc0cb })); // Light pink default
   const [selectedColor, setSelectedColor] = useState('lightpink');
+  const [mousePosition, setMousePosition] = useState({ x: 0, y: 0 });
+  const [isLoaded, setIsLoaded] = useState(false);
   useEffect(() => {
+    setIsLoaded(true);
+    
+    const handleMouseMove = (e) => {
+      setMousePosition({
+        x: (e.clientX / window.innerWidth) * 100,
+        y: (e.clientY / window.innerHeight) * 100,
+      });
+    };
+
+    window.addEventListener('mousemove', handleMouseMove);
+    
     const scene = new THREE.Scene();
-    const camera = new THREE.PerspectiveCamera(60, window.innerWidth / window.innerHeight, 0.1, 1000);
+    const navHeight = 80;
+    const availableHeight = window.innerHeight - navHeight;
+    const camera = new THREE.PerspectiveCamera(60, window.innerWidth / availableHeight, 0.1, 1000);
     const renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true });
-    renderer.setSize(window.innerWidth, window.innerHeight);
+    renderer.setSize(window.innerWidth, availableHeight);
+    renderer.setClearColor(0xfdfcf8, 0.8);
     mountRef.current.appendChild(renderer.domElement);
     const controls = new OrbitControls(camera, renderer.domElement);
     controls.enableDamping = true;
@@ -71,12 +89,14 @@ const InteractiveRose = () => {
     };
     animate();
     const handleResize = () => {
-      camera.aspect = window.innerWidth / window.innerHeight;
+      const newAvailableHeight = window.innerHeight - navHeight;
+      camera.aspect = window.innerWidth / newAvailableHeight;
       camera.updateProjectionMatrix();
-      renderer.setSize(window.innerWidth, window.innerHeight);
+      renderer.setSize(window.innerWidth, newAvailableHeight);
     };
     window.addEventListener('resize', handleResize);
     return () => {
+      window.removeEventListener('mousemove', handleMouseMove);
       window.removeEventListener('resize', handleResize);
       renderer.dispose();
       if (mountRef.current) mountRef.current.removeChild(renderer.domElement);
@@ -95,19 +115,147 @@ const InteractiveRose = () => {
     }
   }, [selectedColor]);
   return (
-    <div style={{ display: 'flex' }}>
-      <div style={{ position: 'absolute', top: 20, left: 20, zIndex: 1 }}>
+    <div style={{ position: 'relative', width: '100vw', height: '100vh', background: '#1a0a1a', overflow: 'hidden' }}>
+      {/* Multi-Color Animated Background */}
+      <div style={{ position: 'fixed', inset: '0', pointerEvents: 'none' }}>
+        {/* Dynamic mouse-following gradient */}
+        <div 
+          style={{
+            position: 'absolute',
+            inset: '0',
+            opacity: 0.4,
+            background: `radial-gradient(circle at ${mousePosition.x}% ${mousePosition.y}%, rgba(255, 105, 180, 0.3) 0%, rgba(255, 20, 147, 0.2) 25%, rgba(255, 182, 193, 0.1) 50%, transparent 70%)`,
+            transition: 'background 0.5s ease-out'
+          }}
+        />
+        
+        {/* Animated orbs */}
+        <div style={{
+          position: 'absolute',
+          top: '25%',
+          left: '25%',
+          width: '384px',
+          height: '384px',
+          borderRadius: '50%',
+          filter: 'blur(48px)',
+          opacity: 0.3,
+          background: 'linear-gradient(45deg, #ff69b4, #ff1493, #ffb6c1)',
+          animation: 'float 20s ease-in-out infinite'
+        }} />
+        <div style={{
+          position: 'absolute',
+          top: '75%',
+          right: '25%',
+          width: '320px',
+          height: '320px',
+          borderRadius: '50%',
+          filter: 'blur(48px)',
+          opacity: 0.25,
+          background: 'linear-gradient(45deg, #ff1493, #dc143c, #ff6347)',
+          animation: 'float 20s ease-in-out infinite',
+          animationDelay: '3s'
+        }} />
+        
+        {/* Floating particles */}
+        <div style={{
+          position: 'absolute',
+          top: '80px',
+          left: '40px',
+          width: '12px',
+          height: '12px',
+          background: '#ff69b4',
+          borderRadius: '50%',
+          opacity: 0.8,
+          animation: 'float 15s ease-in-out infinite'
+        }} />
+        <div style={{
+          position: 'absolute',
+          top: '160px',
+          right: '80px',
+          width: '8px',
+          height: '8px',
+          background: '#ff1493',
+          borderRadius: '50%',
+          opacity: 0.7,
+          animation: 'float 15s ease-in-out infinite',
+          animationDelay: '2s'
+        }} />
+        <div style={{
+          position: 'absolute',
+          bottom: '160px',
+          left: '80px',
+          width: '16px',
+          height: '16px',
+          background: '#ffb6c1',
+          borderRadius: '50%',
+          opacity: 0.6,
+          animation: 'float 15s ease-in-out infinite',
+          animationDelay: '4s'
+        }} />
+      </div>
+      
+
+      <DismissableMessage 
+        title="Interactive Rose"
+        description="Change the rose color using the controls below."
+        gradient="linear-gradient(45deg, #ff69b4, #ff1493)"
+        borderColor="rgba(255, 105, 180, 0.3)"
+        position={{ top: '100px', left: '2rem' }}
+      />
+
+      {/* Color Selector */}
+      <div style={{
+        position: 'absolute',
+        top: '200px',
+        left: '2rem',
+        zIndex: 10,
+        background: 'rgba(0, 0, 0, 0.3)',
+        backdropFilter: 'blur(20px)',
+        padding: '1rem',
+        borderRadius: '0.75rem',
+        border: '1px solid rgba(255, 105, 180, 0.3)',
+        boxShadow: '0 8px 32px rgba(0, 0, 0, 0.3)',
+        color: 'white',
+        animation: `${isLoaded ? 'fade-in 1s ease-out' : 'none'}`,
+        opacity: isLoaded ? 1 : 0
+      }}>
+        <p style={{ margin: '0 0 1rem 0', fontSize: '0.9rem', opacity: 0.9 }}>Rose Color:</p>
         <select
           value={selectedColor}
           onChange={(e) => setSelectedColor(e.target.value)}
-          style={{ padding: '8px', fontSize: '16px' }}
+          style={{ 
+            padding: '8px', 
+            fontSize: '16px',
+            backgroundColor: 'rgba(0, 0, 0, 0.5)',
+            color: 'white',
+            border: '1px solid rgba(255, 105, 180, 0.5)',
+            borderRadius: '0.5rem',
+            backdropFilter: 'blur(10px)',
+            transition: 'all 0.3s ease'
+          }}
+          onFocus={(e) => {
+            e.target.style.borderColor = '#ff69b4';
+            e.target.style.boxShadow = '0 0 10px rgba(255, 105, 180, 0.3)';
+          }}
+          onBlur={(e) => {
+            e.target.style.borderColor = 'rgba(255, 105, 180, 0.5)';
+            e.target.style.boxShadow = 'none';
+          }}
         >
           <option value="red">Red</option>
           <option value="yellow">Yellow</option>
           <option value="magenta">Magenta</option>
+          <option value="lightpink">Light Pink</option>
         </select>
       </div>
-      <div ref={mountRef} style={{ width: '100vw', height: '100vh' }} />
+
+      <div ref={mountRef} style={{ 
+        width: '100vw', 
+        height: 'calc(100vh - 80px)', 
+        marginTop: '80px',
+        background: 'rgba(253, 252, 248, 0.9)', 
+        borderRadius: '12px 12px 0 0' 
+      }} />
     </div>
   );
 };
